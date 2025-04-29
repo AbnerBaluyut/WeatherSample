@@ -302,9 +302,11 @@ packages:
   get_weather:
     dependency: "direct main"
     description:
-      path: "packages/get_weather"
-      relative: true
-    source: path
+      path: "."
+      ref: main
+      resolved-ref: "952ac16feb4e027f1b61d724240ac7f69f09d5ab"
+      url: "https://github.com/AbnerBaluyut/GetWeather.git"
+    source: git
     version: "0.0.1"
   glob:
     dependency: transitive
