@@ -11,7 +11,13 @@ class WeatherInitial extends WeatherState {}
 
 class WeatherLoading extends WeatherState {}
 
-class WeatherFailure extends WeatherState {}
+class WeatherFailure extends WeatherState {
+  final String errorMessage;
+  const WeatherFailure(this.errorMessage);
+
+  @override
+  List<Object?> get props => [errorMessage];
+}
 
 class WeatherSuccess extends WeatherState {
 

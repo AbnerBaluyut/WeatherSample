@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,7 +12,7 @@ class WeatherPageWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (ctx) => WeatherBloc()..add(GetWeatherEvent()),
+      create: (ctx) => WeatherBloc(),
       child: WeatherPage(),
     );
   }
@@ -30,6 +31,18 @@ class _WeatherPageState extends State<WeatherPage> {
   Timer? _timer;
 
   void _startWeatherUpdates() {
+
+    if (_timer == null) {
+
+      context.read<WeatherBloc>().add(GetWeatherEvent());
+      _setTimer();
+      return;
+    }
+
+    _setTimer();
+  }
+
+  void _setTimer() {
 
     setState(() {
       _timer = Timer.periodic(Duration(seconds: 10), (_) => context.read<WeatherBloc>().add(GetWeatherEvent()));
@@ -51,7 +64,12 @@ class _WeatherPageState extends State<WeatherPage> {
   
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WeatherBloc, WeatherState>(
+    return BlocConsumer<WeatherBloc, WeatherState>(
+      listener: (context, state) {
+        if (state is WeatherFailure) {
+          log("Error: ${state.errorMessage}");
+        }
+      },
       builder: (ctx, state) {
 
         if (state is WeatherSuccess) {
@@ -86,17 +104,17 @@ class _WeatherPageState extends State<WeatherPage> {
     IconData icon;
 
     switch (data?.condition) {
-      case WeatherConditionEnum.clear:
+      case WeatherCondition.clear:
         icon = Icons.wb_sunny;
-      case WeatherConditionEnum.cloudy:
+      case WeatherCondition.cloudy:
         icon = Icons.cloud;
-      case WeatherConditionEnum.foggy:
+      case WeatherCondition.foggy:
         icon = Icons.blur_on;
-      case WeatherConditionEnum.rainy:
+      case WeatherCondition.rainy:
         icon = Icons.umbrella;
-      case WeatherConditionEnum.snowy:
+      case WeatherCondition.snowy:
         icon = Icons.ac_unit;
-      case WeatherConditionEnum.thunderstorm:
+      case WeatherCondition.thunderstorm:
         icon = Icons.flash_on;
       default:
         icon = Icons.help_outline;
@@ -113,8 +131,8 @@ class _WeatherPageState extends State<WeatherPage> {
           color: Colors.blueAccent,
         ),
         const SizedBox(height: 16),
-        Text(
-          "${data?.label ?? ""} ${data?.temperature.toStringAsFixed(1)}°C",
+        if (data != null) Text(
+          "${data.label} ${data.temperature.toStringAsFixed(1)}°C",
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
