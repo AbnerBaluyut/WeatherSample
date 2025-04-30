@@ -356,8 +356,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: fe28c93dc2436e3f3dc81c04c1d5d0fa82e33880
+      ref: HEAD
+      resolved-ref: ceb6e50e6720e87e20639808e69ea6e7f1b1d9ee
       url: "https://github.com/AbnerBaluyut/GetWeather.git"
     source: git
     version: "0.0.1"

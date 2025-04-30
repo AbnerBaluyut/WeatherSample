@@ -49,9 +49,7 @@ dependencies:
   json_annotation: ^4.9.0
 
   get_weather:
-    git: 
-      url: https://github.com/AbnerBaluyut/GetWeather.git
-      ref: main
+    git: https://github.com/AbnerBaluyut/GetWeather.git
 
 dev_dependencies:
   flutter_test:

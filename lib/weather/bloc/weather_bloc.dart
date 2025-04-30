@@ -7,45 +7,49 @@ part 'weather_state.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
 
-  final WeatherUseCase weatherUseCase;
-  
-  final LocationManager _locationManager = LocationManager();
+  final WeatherService _weatherService;
 
   WeatherBloc() : 
-  weatherUseCase = injector(),
-  super(WeatherInitial()) {
+  _weatherService = WeatherService(),
+  super(WeatherInitialState()) {
     on<GetWeatherEvent>(_getWeather);
+    on<CancelWeatherEvent>(_cancel);    
   }
 
   _getWeather(GetWeatherEvent event, Emitter<WeatherState> emit) async {
 
-    emit(WeatherLoading());
+    emit(WeatherLoadingState());
 
-    final location = await _locationManager.getCurrentLocation();
+    final location = await _weatherService.getCurrentLocation();
 
     switch (location.status) {
       case LocationStatus.success:   
         double lat = location.position?.latitude ?? 0.0;
         double lng = location.position?.longitude ?? 0.0;
-        final result = await weatherUseCase.execute(latitude: lat, longitude: lng).run();
+        final result = await _weatherService.getWeather(latitude: lat, longitude: lng).run();
         result.fold((err) {
-          emit(WeatherFailure(err));
+          emit(WeatherFailureState(err));
         }, (data) {
-          emit(WeatherSuccess(data));
+          emit(WeatherSuccessState(data));
         });
         break;
       case LocationStatus.serviceDisabled:
-        emit(WeatherFailure("service_disabled"));
+        emit(WeatherFailureState("service_disabled"));
         break;
       case LocationStatus.permissionDenied:
-        emit(WeatherFailure("permission_denied"));
+        emit(WeatherFailureState("permission_denied"));
         break;
       case LocationStatus.permissionDeniedForever:
-        emit(WeatherFailure("permission_denied_forever"));
+        emit(WeatherFailureState("permission_denied_forever"));
         break;
       case LocationStatus.error:
-        emit(WeatherFailure("Something went wrong. Please try again"));
+        emit(WeatherFailureState("Something went wrong. Please try again"));
         break;
     }
   }
+
+  _cancel(CancelWeatherEvent event, Emitter<WeatherState> emit) {
+    _weatherService.cancel();
+    emit(CancelWeatherState());
+  } 
 }

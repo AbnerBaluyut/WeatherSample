@@ -4,6 +4,6 @@ import 'package:get_weather/get_weather.dart';
 import 'app.dart';
 
 void main() async {
-  setupDI();
+  WeatherService.initialize();
   runApp(const App());
 }
