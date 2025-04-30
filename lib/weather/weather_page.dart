@@ -50,13 +50,13 @@ class _WeatherPageState extends State<_WeatherPage> {
     context.read<WeatherBloc>().add(CancelWeatherEvent());
     setState(() {
       _timer?.cancel();
+      _timer = null;
     });
   }
 
   @override
   void dispose() {
     _cancelTimer();
-    _timer = null;
     super.dispose();
   }
   
